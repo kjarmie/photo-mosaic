@@ -7,24 +7,23 @@ namespace PhotoMosaic;
 
 public static class ImageExtensions
 {
-    public static void Process(this Image<Rgba32> image, Action<Rgba32> func)
+    public static void Process(this Image<Rgba32> image, Action<Coord, Rgba32> func)
     {
-        for (int i = 0; i < image.Width; i++)
+        for (int c = 0; c < image.Width; c++)
         {
-            for (int j = 0; j < image.Height; j++)
+            for (int r = 0; r < image.Height; r++)
             {
-                func(image[i, j]);
+                func(new Coord(r, c), image[c, r]);
             }
         }
     }
-
 
     public static Rgba32 AverageRgba(this Image<Rgba32> image)
     {
         double sumR = 0, sumG = 0, sumB = 0;
         double totalPixels = image.Width * (double)image.Height;
 
-        image.Process(pixel =>
+        image.Process((_, pixel) =>
         {
             sumR += pixel.R;
             sumG += pixel.G;
@@ -38,49 +37,32 @@ public static class ImageExtensions
         );
     }
 
-    /// <summary>
-    /// Splits an image into a sequence of smaller sub-images.
-    /// </summary>
-    /// <param name="image">The image to split.</param>
-    /// <param name="chunks">The desired number of chunks horizontally and vertically. Must be greater than 2.</param>
-    /// <returns>An `IEnumerable` of sub-images.</returns>
-    /// <exception cref="ArgumentOutOfRangeException">
-    /// Thrown if the `chunks` parameter is less than or equal to 2.
-    /// </exception>
     public static Dictionary<Coord, Image<Rgba32>> SplitInto(this Image<Rgba32> image, int chunks)
     {
-        if (chunks < 2)
-        {
-            throw new ArgumentOutOfRangeException(nameof(chunks), "Number of chunks must be greater than 2.");
-        }
+        var xS = (int)(image.Width / Math.Sqrt(chunks));
+        var yS = (int)(image.Height / Math.Sqrt(chunks));
 
-        var chunkWidth = Math.Max(1, image.Width / chunks);
-        var chunkHeight = Math.Max(1, image.Height / chunks);
+        // Console.WriteLine($"Rect size: {xS} (w) x {yS} (h)");
+
+        var cols = image.Width / xS;
+        var rows = image.Height / yS;
+        // Console.WriteLine($"Dims: {cols} (w) x {rows} (h)");
+
 
         Dictionary<Coord, Image<Rgba32>> dict = new Dictionary<Coord, Image<Rgba32>>();
 
-        int row = 0;
-        int col = 0;
-        for (int i = 0; i < image.Width; i += chunkWidth)
+        for (int r = 0; r < rows; r++)
         {
-            row = 0;
-            for (int j = 0; j < image.Height; j += chunkHeight)
+            for (int c = 0; c < cols; c++)
             {
-                int actualWidth = Math.Min(chunkWidth, image.Width - i);
-                int actualHeight = Math.Min(chunkHeight, image.Height - j);
-
-                Rectangle chunkRect = new Rectangle(i, j, actualWidth, actualHeight);
+                Rectangle chunkRect = new Rectangle(c * xS, r * yS, xS, yS);
                 var chunk = image.Clone(
                     ipc => ipc
                         .Crop(chunkRect)
                 );
+                dict.Add(new Coord(r, c), chunk);
 
-                dict.Add(new Coord(row, col), chunk);
-
-                row++;
             }
-
-            col++;
         }
 
         return dict;
@@ -157,5 +139,15 @@ public static class ImageExtensions
             Math.Pow(pixel.A - other.A, 2) +
             Math.Pow(pixel.B - other.B, 2)
         );
+    }
+
+    public static void DrawImage(this Image<Rgba32> image, int startX, int startY, Image<Rgba32> overlay)
+    {
+        overlay.Process((coord, pixel) =>
+        {
+            var imageX = startX + coord.col;
+            var imageY = startY + coord.row;
+            image[imageX, imageY] = pixel;
+        });
     }
 }

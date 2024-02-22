@@ -1,24 +1,34 @@
-﻿using PhotoMosaic;
+﻿using Microsoft.Extensions.Logging;
+using PhotoMosaic;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Jpeg;
 using SixLabors.ImageSharp.PixelFormats;
 
-PhotoMosaicBuilder builder = new PhotoMosaicBuilder();
+using var loggerFactory = LoggerFactory.Create(builder =>
+{
+    builder
+        .AddFilter("Microsoft", LogLevel.Warning)
+        .AddFilter("System", LogLevel.Warning)
+        .AddFilter("Showcase", LogLevel.Debug)
+        .AddConsole();
+});
+ILogger logger = loggerFactory.CreateLogger<Program>();
 
-Console.WriteLine($"{DateTime.Now.ToLongTimeString()} - Loading images...");
+
+PhotoMosaicBuilder builder = new PhotoMosaicBuilder(logger);
+
+// Console.WriteLine($"{DateTime.Now.ToLongTimeString()} - Loading images...");
+logger.LogInformation("Loading dataset...");
 var dataset = LoadImages();
-Console.WriteLine($"{DateTime.Now.ToLongTimeString()} - Images Loaded");
-Console.WriteLine($"{DateTime.Now.ToLongTimeString()} - Loading Source...");
+
+logger.LogInformation("Loading source...");
 var source = LoadSource();
 
-Console.WriteLine($"{DateTime.Now.ToLongTimeString()} - Generating Mosaic...");
-var mosaic = builder.Build(source, dataset);
-Console.WriteLine($"{DateTime.Now.ToLongTimeString()} - Mosaic Generated");
+logger.LogInformation("Generating Mosaic...");
+var mosaic = builder.Generate(source, dataset);
 
-Console.WriteLine($"{DateTime.Now.ToLongTimeString()} - Saving Mosaic...");
+logger.LogInformation("Saving Mosaic...");
 SaveImageToJpg(mosaic, "outputs", "output");
-
-Console.WriteLine($"{DateTime.Now.ToLongTimeString()} - Mosaic Saved...");
 
 void SaveImageToJpg(Image image, string outputDirectory, string fileName)
 {
@@ -45,7 +55,7 @@ Image<Rgba32> LoadSource()
 
     Image<Rgba32> image = new Image<Rgba32>(1, 1);
 
-    var filePath = Path.Combine(assetsPath, "source2.jpg");
+    var filePath = Path.Combine(assetsPath, "source.jpg");
     try
     {
         // Load the image

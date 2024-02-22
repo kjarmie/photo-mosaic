@@ -1,4 +1,5 @@
-﻿using SixLabors.ImageSharp;
+﻿using Microsoft.Extensions.Logging;
+using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 
@@ -6,17 +7,29 @@ namespace PhotoMosaic;
 
 public class PhotoMosaicBuilder
 {
-    public Image<Rgba32> Build(Image<Rgba32> src, Dictionary<string, Image<Rgba32>> dataset)
+    private readonly ILogger _logger;
+
+    public PhotoMosaicBuilder(ILogger logger)
     {
+        _logger = logger;
+    }
+
+    public Image<Rgba32> Generate(Image<Rgba32> src, Dictionary<string, Image<Rgba32>> dataset)
+    {
+        _logger.LogInformation("Generating Mosaic - Dataset average rgb...");
         var dataSetAveRGB = dataset
             .Select(x => new KeyValuePair<string, Rgba32>(x.Key, x.Value.AverageRgba()))
             .ToDictionary();
 
-        var chunks = src.SplitInto(20);
+        _logger.LogInformation("Generating Mosaic - Splitting into chunks...");
+        var chunks = src.SplitInto(10000);
+
+        _logger.LogInformation("Generating Mosaic - Chunks average rgb...");
         var chunksAveRGB = chunks
             .Select(e => new KeyValuePair<Coord, Rgba32>(e.Key, e.Value.AverageRgba()))
             .ToDictionary();
 
+        _logger.LogInformation("Generating Mosaic - Distance chunks to each dataset...");
         var chunkToImageDistances = chunksAveRGB
             .Select(e =>
                 new KeyValuePair<Coord, Dictionary<string, double>>(e.Key, dataSetAveRGB
@@ -31,6 +44,7 @@ public class PhotoMosaicBuilder
             )
             .ToDictionary();
 
+        _logger.LogInformation("Generating Mosaic - Matching new chunks...");
         var chunksToDataset = chunkToImageDistances
             .Select(e => new KeyValuePair<Coord, Image<Rgba32>>(e.Key, dataset[
                     e.Value.MinBy(k => k.Value).Key
@@ -38,11 +52,18 @@ public class PhotoMosaicBuilder
             )
             .ToDictionary();
 
+        _logger.LogInformation("Generating Mosaic - Resizing new chunks...");
         var newChunks = chunksToDataset
-            .Select(e => new KeyValuePair<Coord, Image<Rgba32>>(e.Key, e.Value
-                .Clone(ipc => ipc.Resize(e.Value.Width, e.Value.Height))))
+            .Select(e => new KeyValuePair<Coord, Image<Rgba32>>(
+                    e.Key, e.Value
+                        .Clone(ipc =>
+                            ipc.Resize(chunks[e.Key].Width, chunks[e.Key].Height)
+                        )
+                )
+            )
             .ToDictionary();
 
+        _logger.LogInformation("Generating Mosaic - Creating mosaic...");
         var mosaic = ChunksToMosaic(newChunks, src.Width, src.Height);
 
         return mosaic;
@@ -53,67 +74,23 @@ public class PhotoMosaicBuilder
     {
         var mosaic = new Image<Rgba32>(width, height);
 
-        var cols = chunks.MaxBy(e => e.Key.col).Key.col;
-        var rows = chunks.MaxBy(e => e.Key.row).Key.row;
+        var xS = (int)(mosaic.Width / Math.Sqrt(chunks.Count));
+        var yS = (int)(mosaic.Height / Math.Sqrt(chunks.Count));
 
+        var cols = mosaic.Width / xS;
+        var rows = mosaic.Height / yS;
 
-        for (int i = 0; i < cols; i++)
+        for (int r = 0; r < rows; r++)
         {
-            for (int j = 0; j < rows; j++)
+            for (int c = 0; c < cols; c++)
             {
-                var coord = new Coord(j, i);
-                var chunk = chunks[coord];
-                AddChunkToMosaic(mosaic, coord, chunk);
+                var section = new Coord(r, c);
+                var chunk = chunks[section];
+
+                mosaic.DrawImage(c * xS, r * yS, chunk);
             }
         }
 
         return mosaic;
-    }
-
-    private void AddChunkToMosaic(Image<Rgba32> mosaic, Coord section, Image<Rgba32> chunk)
-    {
-        int i = 0;
-        int j = 0;
-
-        int row = 0;
-        int col = 0;
-        try
-        {
-            for (i = section.col * chunk.Width; i < (section.row + 1) * chunk.Width; i++)
-            {
-                row = 0;
-                for (j = section.row * chunk.Height; j < (section.row + 1) * chunk.Height; j++)
-                {
-                    var pixel =  chunk[col, row];
-                    mosaic[i, j] = pixel;
-                    row++;
-                }
-
-                col++;
-            }
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine($"Chunk: {chunk.Height} (H) x {chunk.Width} (W)");
-            Console.WriteLine($"row: {row}");
-            Console.WriteLine($"col: {col}");
-            Console.WriteLine($"i: {i}");
-            Console.WriteLine($"i-max: {(section.row + 1) * chunk.Width}");
-            Console.WriteLine($"j: {j}");
-            Console.WriteLine($"j-max: {(section.row + 1) * chunk.Height}");
-            throw;
-        }
-
-        // for (int i = section.row * 20; i < (section.row + 1) * 20; i++)
-        // {
-        //     col = 0;
-        //     for (int j = section.col * 20; j < (section.col + 1) * 20; j++)
-        //     {
-        //         mosaic[i, j] = chunk[row, col];
-        //         col++;
-        //     }
-        //
-        //     row++;
-        // }
     }
 }
