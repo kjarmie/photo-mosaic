@@ -11,6 +11,11 @@ public struct Coord
         this.col = col;
     }
 
+    public override string ToString()
+    {
+        return $"({col}, {row})";
+    }
+
     public override bool Equals(object? obj)
     {
         return obj is Coord && ((Coord)obj).row == row && ((Coord)obj).col == col;

@@ -1,0 +1,3 @@
+.active-menu-item {
+    @apply bg-primary text-white;
+}

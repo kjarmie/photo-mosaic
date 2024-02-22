@@ -1,0 +1,22 @@
+﻿@using Webapp.Features.Home
+<!DOCTYPE html>
+@if (ViewContext.HttpContext.Request.Headers["HX-Boosted"].Contains("true"))
+{
+    @RenderBody()
+}
+else
+{
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+        <title>@ViewData["Title"]</title>
+
+        <link rel="stylesheet" vite-href="~/site.js" asp-append-version="true"/>
+        <script type="module" vite-src="~/site.js" asp-append-version="true"></script>
+    </head>
+    <body hx-boost="true" hx-swap="innerHTML transition:true" class="bg-gray-950 h-screen min-w-96">
+    @RenderBody()
+    </body>
+    </html>
+}

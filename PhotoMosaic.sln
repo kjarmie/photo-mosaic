@@ -6,6 +6,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhotoMosaic.Tests", "PhotoM
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Showcase", "Showcase\Showcase.csproj", "{9AA26A98-686C-4075-B391-335C4AE6B77E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Webapp", "Webapp\Webapp.csproj", "{417FC087-AFA0-4471-9DC0-7162843B4CF9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{9AA26A98-686C-4075-B391-335C4AE6B77E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9AA26A98-686C-4075-B391-335C4AE6B77E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9AA26A98-686C-4075-B391-335C4AE6B77E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{417FC087-AFA0-4471-9DC0-7162843B4CF9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{417FC087-AFA0-4471-9DC0-7162843B4CF9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{417FC087-AFA0-4471-9DC0-7162843B4CF9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{417FC087-AFA0-4471-9DC0-7162843B4CF9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

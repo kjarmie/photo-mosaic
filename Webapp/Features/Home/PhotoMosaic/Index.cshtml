@@ -1,0 +1,22 @@
+﻿@using Webapp.Features.Home
+@using Webapp.Features.Home.PhotoMosaic
+@model Webapp.Features.Home.PhotoMosaic.Index
+
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Photo Mosaic Example";
+}
+<div class="flex flex-col justify-center items-center h-full">
+    <a href="@HomeEndpoint.Url" class="link mb-32">Take me back home</a>
+    <div id="output">
+
+    </div>
+    <form hx-post="@PhotoMosaicUploadEndpoint.Url" enctype="multipart/form-data" class="flex flex-col gap-8 items-center">
+        <input type="file" name="image" alt="image-upload" accept="image/png" class="input file-input text-gray-900 input-sm">
+        <button class="btn btn-sm w-fit">
+            Upload
+        </button>
+    </form>
+
+
+</div>

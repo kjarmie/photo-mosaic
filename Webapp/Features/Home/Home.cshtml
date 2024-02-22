@@ -1,0 +1,34 @@
+﻿@using Webapp.Features.Home
+@using Webapp.Features.Home.PhotoMosaic
+@model Webapp.Features.Home.Home
+
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Home";
+}
+<div class="flex flex-col justify-center items-center h-full">
+    <h1 class="text-center text-6xl">Welcome to Photo-Mosaic!</h1>
+    <p class="mt-4">This website is built with</p>
+    <div class="flex flex-row justify-center gap-16 w-full pt-16">
+        <a href="https://dotnet.microsoft.com/" target="_blank">
+            <img src="images/dotnet.svg" class="aspect-square size-24" alt="Dotnet logo"/>
+        </a>
+        <a href="https://htmx.org/" target="_blank">
+            <img src="images/htmx2.svg" class="aspect-square size-24" alt="Vite logo"/>
+        </a>
+        <a href="https://vitejs.dev" target="_blank">
+            <img src="images/vite.svg" class="aspect-square size-24" alt="Vite logo"/>
+        </a>
+
+        <a href="https://tailwindcss.com/" target="_blank">
+            <img src="images/tailwind.svg" class="aspect-square size-24" alt="Vite logo"/>
+        </a>
+    </div>
+    <h2 class="text-center text-5xl mt-8">ASP.NET + HTMX + Vite + Tailwind</h2>
+    <p class="text-center mt-4">And a sprinkling of other little technologies</p>
+    <p class="text-center mt-4"></p>
+
+    <a href="@PhotoMosaicEndpoint.Url" class="text-center text-lg link">
+        Test out the Photo-Mosaic
+    </a>
+</div>

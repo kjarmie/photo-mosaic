@@ -22,7 +22,7 @@ public class PhotoMosaicBuilder
             .ToDictionary();
 
         _logger.LogInformation("Generating Mosaic - Splitting into chunks...");
-        var chunks = src.SplitInto(10000);
+        var chunks = src.SplitInto(1600);
 
         _logger.LogInformation("Generating Mosaic - Chunks average rgb...");
         var chunksAveRGB = chunks
