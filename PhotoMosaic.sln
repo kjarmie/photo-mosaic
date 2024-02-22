@@ -4,6 +4,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhotoMosaic", "PhotoMosaic\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhotoMosaic.Tests", "PhotoMosaic.Tests\PhotoMosaic.Tests.csproj", "{18D628D0-80CF-4FDD-A207-0D1FB22DBC35}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Showcase", "Showcase\Showcase.csproj", "{9AA26A98-686C-4075-B391-335C4AE6B77E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +20,9 @@ Global
 		{18D628D0-80CF-4FDD-A207-0D1FB22DBC35}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{18D628D0-80CF-4FDD-A207-0D1FB22DBC35}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{18D628D0-80CF-4FDD-A207-0D1FB22DBC35}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9AA26A98-686C-4075-B391-335C4AE6B77E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9AA26A98-686C-4075-B391-335C4AE6B77E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9AA26A98-686C-4075-B391-335C4AE6B77E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9AA26A98-686C-4075-B391-335C4AE6B77E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
